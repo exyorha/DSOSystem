@@ -45,25 +45,48 @@ set(gui_sources
     GUI/View.cpp
 )
 
+if(UNIX)
+	set(platform_sources
+	    include/LinuxPlatform/ILinuxDescriptorEventReceiver.h
+		include/LinuxPlatform/LinuxAcquisition.h
+		include/LinuxPlatform/LinuxApplicationPlatform.h
+		include/LinuxPlatform/LinuxDRMRenderer.h
+		include/LinuxPlatform/LinuxDSOPlatform.h
+		include/LinuxPlatform/LinuxError.h
+		include/LinuxPlatform/LinuxEventLoop.h
+		include/LinuxPlatform/LinuxManagedDescriptor.h
+		LinuxPlatform/LinuxAcquisition.cpp
+		LinuxPlatform/LinuxApplicationPlatform.cpp
+		LinuxPlatform/LinuxDRMRenderer.cpp
+		LinuxPlatform/LinuxDSOPlatform.cpp
+		LinuxPlatform/LinuxError.cpp
+		LinuxPlatform/LinuxEventLoop.cpp
+		LinuxPlatform/LinuxManagedDescriptor.cpp
+	)
+endif()
+
+if(WIN32)
+	set(platform_sources
+        include/Win32/HandleWrappers.h
+		include/Win32/WindowsAcquisition.h
+        include/Win32/WindowsApplicationPlatform.h
+		include/Win32/WindowsDSOAccumulator.h
+        include/Win32/WindowsDSOPlatform.h
+        include/Win32/WindowsHostWindow.h
+        Win32/HandleWrappers.cpp
+		Win32/WindowsAcquisition.cpp
+        Win32/WindowsApplicationPlatform.cpp
+		Win32/WindowsDSOAccumulator.cpp
+        Win32/WindowsDSOPlatform.cpp
+        Win32/WindowsHostWindow.cpp
+		Resources/resources.rc
+	)
+endif()
+
 add_executable(DSO
     ${dso_sources}
     ${gui_sources}
-
-    include/LinuxPlatform/ILinuxDescriptorEventReceiver.h
-    include/LinuxPlatform/LinuxAcquisition.h
-    include/LinuxPlatform/LinuxApplicationPlatform.h
-    include/LinuxPlatform/LinuxDRMRenderer.h
-    include/LinuxPlatform/LinuxDSOPlatform.h
-    include/LinuxPlatform/LinuxError.h
-    include/LinuxPlatform/LinuxEventLoop.h
-    include/LinuxPlatform/LinuxManagedDescriptor.h
-    LinuxPlatform/LinuxAcquisition.cpp
-    LinuxPlatform/LinuxApplicationPlatform.cpp
-    LinuxPlatform/LinuxDRMRenderer.cpp
-    LinuxPlatform/LinuxDSOPlatform.cpp
-    LinuxPlatform/LinuxError.cpp
-    LinuxPlatform/LinuxEventLoop.cpp
-    LinuxPlatform/LinuxManagedDescriptor.cpp
+	${platform_sources}
 
     include/SkUserConfig.h
 
@@ -72,9 +95,13 @@ add_executable(DSO
 
 source_group(DSO FILES ${dso_sources})
 source_group(GUI FILES ${gui_sources})
+source_group(Platform FILES ${platform_sources})
 
 target_include_directories(DSO PRIVATE include)
-target_compile_definitions(DSO PRIVATE GUI_DISABLE)
-target_link_libraries(DSO PRIVATE skia clp libdrm)
+target_link_libraries(DSO PRIVATE skia clp)
+
+if(UNIX)
+	target_link_libraries(DSO PRIVATE libdrm)
+endif()
 
 install(TARGETS DSO DESTINATION sbin)
