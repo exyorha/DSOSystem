@@ -114,9 +114,7 @@ int main(int argc, char **argv) {
 
                     for(auto &tracked: trackedProcesses) {
                         if(tracked.currentPid == info.si_pid) {
-                            printf("%d exited (%s)\n", tracked.currentPid, tracked.run->program.c_str());
-                            //tracked.currentPid = tracked.run->execute();
-                            //rebootCode = RB_HALT_SYSTEM;
+                            tracked.currentPid = tracked.run->execute();
                             break;
                         }
                     }

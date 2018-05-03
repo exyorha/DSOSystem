@@ -102,6 +102,7 @@ target_link_libraries(DSO PRIVATE skia clp)
 
 if(UNIX)
 	target_link_libraries(DSO PRIVATE libdrm)
+    set_target_properties(DSO PROPERTIES LINK_FLAGS "-static")
 endif()
 
 install(TARGETS DSO DESTINATION sbin)

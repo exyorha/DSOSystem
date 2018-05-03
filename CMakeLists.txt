@@ -40,7 +40,7 @@ if(UNIX)
 	target_include_directories(libdrm INTERFACE ${LIBDRM_INCLUDE_DIRS})
 	target_link_libraries(libdrm INTERFACE ${LIBDRM_LIBRARIES})
 	target_include_directories(skia INTERFACE ${SKIA_INCLUDE_DIRS}/core ${SKIA_INCLUDE_DIRS}/gpu)
-	target_link_libraries(skia INTERFACE ${SKIA_LDFLAGS} -Wl,-rpath-link,${SKIA_LIBRARY_DIRS})
+	target_link_libraries(skia INTERFACE ${SKIA_LDFLAGS} -lfreetype -Wl,-rpath-link,${SKIA_LIBRARY_DIRS})
 endif()
 
 if(WIN32)
