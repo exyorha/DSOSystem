@@ -15,6 +15,8 @@ class SkSurface;
 class MoveEvent;
 class ResizeEvent;
 class PaintEvent;
+class KeyEvent;
+class FocusEvent;
 
 class View : public LayoutItem {
 public:
@@ -49,6 +51,16 @@ public:
     virtual SkISize minimumSizeHint() const override;
     virtual SkISize maximumSizeHint() const override;
 
+	void clearFocus();
+	void setFocus();
+	bool hasFocus() const;
+
+	inline bool focusPolicy() const {
+		return m_focusPolicy;
+	}
+
+	void setFocusPolicy(bool focusPolicy);
+
 protected:
     virtual void setGeometryImpl(const SkIRect &geometry) override;
     virtual void setVisibilityImpl(ViewVisibility visibility) override;
@@ -58,11 +70,25 @@ protected:
     virtual void showEvent(Event *event);
     virtual void hideEvent(Event *event);
     virtual void paintEvent(PaintEvent *event);
-
+	virtual void keyPressEvent(KeyEvent *event);
+	virtual void keyReleaseEvent(KeyEvent *event);
+	virtual void focusInEvent(FocusEvent *event);
+	virtual void focusOutEvent(FocusEvent *event);
+	
     LayoutConstraint *createConstraint(
         float leftMultiplier, LayoutItem *leftItem, LayoutAttribute leftAttribute,
         LayoutConstraint::Relation relation,
         float rightMultiplier, LayoutItem *rightItem, LayoutAttribute rightAttribute, float constant, float penalty = 0.0f);
+
+	inline bool focusPreviousChild() {
+		return focusNextPrevChild(false);
+	}
+
+	inline bool focusNextChild() {
+		return focusNextPrevChild(true);
+	}
+
+	virtual bool focusNextPrevChild(bool next);
 
 private:
     void pushGeometryUpdates(const SkIRect &current, const SkIRect &previous);
@@ -78,6 +104,8 @@ private:
     SkIRect m_lastVisibleGeometry;
     bool m_visibleOnScreen;
     bool m_layoutEnabled;
+	bool m_focusPolicy;
+	bool m_focusPending;
 };
 
 extern LogFacility viewLog;

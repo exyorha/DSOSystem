@@ -3,6 +3,7 @@
 
 #include <GUI/View.h>
 #include <DSO/IDSOAcquisitionEventReceiver.h>
+#include <Logging/LogFacility.h>
 
 class TextView;
 class DSOScreenView;
@@ -15,6 +16,10 @@ public:
 
     void initializeAcquisition(DSOAcquisition &acquisition);
 
+protected:
+	virtual void keyPressEvent(KeyEvent *event) override;
+	virtual void keyReleaseEvent(KeyEvent *event) override;
+
 private:
     virtual void acquisitionStateChanged() override;
 
@@ -24,5 +29,7 @@ private:
     TextView *m_bottomStatusBar;
     DSOAcquisition *m_acquisition;
 };
+
+extern LogFacility dsoRootViewLog;
 
 #endif

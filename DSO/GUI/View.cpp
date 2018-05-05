@@ -3,6 +3,8 @@
 #include <GUI/MoveEvent.h>
 #include <GUI/ResizeEvent.h>
 #include <GUI/PaintEvent.h>
+#include <GUI/KeyEvent.h>
+#include <GUI/FocusEvent.h>
 
 #include <SkSurface.h>
 #include <SkCanvas.h>
@@ -16,12 +18,12 @@
 
 #include <assert.h>
 
-View::View() : m_lastVisibleGeometry(SkIRect::MakeEmpty()), m_visibleOnScreen(false), m_layoutEnabled(false) {
+View::View() : m_lastVisibleGeometry(SkIRect::MakeEmpty()), m_visibleOnScreen(false), m_layoutEnabled(false), m_focusPolicy(false), m_focusPending(false) {
 
 }
 
 View::~View() {
-
+	clearFocus();
 }
 
 void View::pushGeometryUpdates(const SkIRect &current, const SkIRect &geometry) {
@@ -86,6 +88,12 @@ void View::setVisibilityImpl(ViewVisibility visibility) {
 			enumerateChildObjects<View>([&](View *view) {
 				view->setVisibility(view->visibility());
 			});
+
+			if (m_focusPending) {
+				m_focusPending = false;
+
+				setFocus();
+			}
 		}
 		else {
 			enumerateChildObjects<View>([&](View *view) {
@@ -119,7 +127,23 @@ bool View::event(Event *event) {
 	case Event::Type::Paint:
 		paintEvent(static_cast<PaintEvent *>(event));
 		return true;
+
+	case Event::Type::KeyPressed:
+		keyPressEvent(static_cast<KeyEvent *>(event));
+		return true;
+
+	case Event::Type::KeyReleased:
+		keyReleaseEvent(static_cast<KeyEvent *>(event));
+		return true;
 		
+	case Event::Type::FocusIn:
+		focusInEvent(static_cast<FocusEvent *>(event));
+		return true;
+
+	case Event::Type::FocusOut:
+		focusOutEvent(static_cast<FocusEvent *>(event));
+		return true;
+
 	default:
 		return Object::event(event);
 	}
@@ -489,6 +513,56 @@ SkISize View::maximumSizeHint() const {
 	else {
 		return LayoutItem::maximumSizeHint();
 	}
+}
+
+void View::keyPressEvent(KeyEvent *event) {
+	event->ignore();
+}
+
+void View::keyReleaseEvent(KeyEvent *event) {
+	event->ignore();
+}
+
+void View::focusInEvent(FocusEvent *event) {
+
+}
+
+void View::focusOutEvent(FocusEvent *event) {
+
+}
+
+bool View::focusNextPrevChild(bool next) {
+	return false;
+}
+
+void View::setFocusPolicy(bool focusPolicy) {
+	m_focusPolicy = focusPolicy;
+
+	if (!focusPolicy) {
+		clearFocus();
+	}
+}
+
+void View::clearFocus() {
+	if (hasFocus()) {
+		Application::instance()->setFocusView(nullptr);
+	}
+	m_focusPending = false;
+}
+
+void View::setFocus() {
+	if (m_focusPolicy) {
+		if (isVisible()) {
+			Application::instance()->setFocusView(this);
+		}
+		else {
+			m_focusPending = true;
+		}
+	}
+}
+
+bool View::hasFocus() const {
+	return Application::instance()->focusView() == this;
 }
 
 LogFacility viewLog(LogSyslogFacility::User, "View");

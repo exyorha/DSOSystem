@@ -11,6 +11,7 @@
 
 class ApplicationPlatform;
 class View;
+class KeyEvent;
 
 class Application final : public Object, private ApplicationPlatformInterface {
 public:
@@ -30,15 +31,23 @@ public:
 
     static inline Application *instance() { return m_instance; }
 
+	inline View *focusView() const {
+		return m_focusView;
+	}
+
+	void setFocusView(View *view);
+
 private:
     virtual void drawFrame(const sk_sp<SkSurface> &surface) override;
     virtual void keyPressed(uint32_t key) override;
     virtual void keyReleased(uint32_t key) override;
 
 private:
+	void deliverKeyEvent(KeyEvent *event);
+
     static thread_local Application *m_instance;
     std::unique_ptr<ApplicationPlatform> m_platform;
-    View *m_rootView;
+    View *m_rootView, *m_focusView;
     SkRegion m_dirtyRegion;
 };
 

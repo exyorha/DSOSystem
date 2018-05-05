@@ -1,12 +1,16 @@
 #include <GUI/Application.h>
 #include <GUI/ApplicationPlatform.h>
 #include <GUI/View.h>
+#include <GUI/KeyEvent.h>
+#include <GUI/FocusEvent.h>
 
 #include <SkSurface.h>
 #include <SkCanvas.h>
 #include <SkRegion.h>
 
-Application::Application(std::unique_ptr<ApplicationPlatform> &&platform) : m_platform(std::move(platform)), m_rootView(nullptr) {
+Application::Application(std::unique_ptr<ApplicationPlatform> &&platform) : m_platform(std::move(platform)), m_rootView(nullptr),
+	m_focusView(nullptr) {
+
     m_platform->setApplicationPlatformInterface(this);
     m_instance = this;
 }
@@ -68,11 +72,40 @@ void Application::drawFrame(const sk_sp<SkSurface> &surface) {
 }
 
 void Application::keyPressed(uint32_t key) {
-	applicationLog.print(LogPriority::Debug, "key pressed: %u", key);
+	KeyEvent event(Event::Type::KeyPressed, key);
+	deliverKeyEvent(&event);
 }
 
 void Application::keyReleased(uint32_t key) {
-	applicationLog.print(LogPriority::Debug, "key released: %u", key);
+	KeyEvent event(Event::Type::KeyReleased, key);
+	deliverKeyEvent(&event);
+}
+
+void Application::deliverKeyEvent(KeyEvent *event) {
+	for (auto view = m_focusView; view; view = static_cast<View *>(view->parent())) {
+		sendEvent(view, event);
+
+		if (event->isAccepted())
+			break;
+	}
+}
+
+void Application::setFocusView(View *view) {
+	if (view != m_focusView) {
+		applicationLog.print(LogPriority::Debug, "changing focus view, new view is %p", view);
+
+		if (m_focusView) {
+			FocusEvent event(Event::Type::FocusOut);
+			sendEvent(m_focusView, &event);
+		}
+
+		m_focusView = view;
+
+		if (m_focusView) {
+			FocusEvent event(Event::Type::FocusIn);
+			sendEvent(m_focusView, &event);
+		}
+	}
 }
 
 thread_local Application *Application::m_instance;

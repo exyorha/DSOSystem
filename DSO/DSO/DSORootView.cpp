@@ -5,6 +5,7 @@
 #include <GUI/TextView.h>
 #include <GUI/LayoutGuide.h>
 #include <GUI/LayoutConstraint.h>
+#include <GUI/KeyEvent.h>
 
 DSORootView::DSORootView() : m_acquisition(nullptr) {
 	auto topStatusBar = createChild<LayoutGuide>();
@@ -52,6 +53,8 @@ DSORootView::DSORootView() : m_acquisition(nullptr) {
 	createConstraint(1.0f, topStatusFiller, LayoutAttribute::Width, LayoutConstraint::Relation::Equal, 1.0f, this, LayoutAttribute::Width, 0.0f, 1.0f);
 
 	setLayoutEnabled(true);
+	setFocusPolicy(true);
+	setFocus();
 }
 
 DSORootView::~DSORootView() {
@@ -95,3 +98,15 @@ void DSORootView::acquisitionStateChanged() {
 	//m_runState->update();
 	updateLayout();
 }
+
+void DSORootView::keyPressEvent(KeyEvent *event) {
+	event->accept();
+
+	dsoRootViewLog.print(LogPriority::Debug, "Key pressed: %u", event->keyCode());
+}
+
+void DSORootView::keyReleaseEvent(KeyEvent *event) {
+	event->accept();
+}
+
+LogFacility dsoRootViewLog(LogSyslogFacility::User, "DSORootView");

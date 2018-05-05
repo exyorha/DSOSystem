@@ -21,6 +21,8 @@ set(gui_sources
     include/GUI/ChildEvent.h
     include/GUI/DisplayInformation.h
     include/GUI/Event.h
+	include/GUI/FocusEvent.h
+	include/GUI/KeyEvent.h
     include/GUI/LayoutConstraint.h
     include/GUI/LayoutGuide.h
     include/GUI/LayoutItem.h
@@ -34,6 +36,8 @@ set(gui_sources
     GUI/ApplicationPlatform.cpp
     GUI/ChildEvent.cpp
     GUI/Event.cpp
+	GUI/FocusEvent.cpp
+	GUI/KeyEvent.cpp
     GUI/LayoutConstraint.cpp
     GUI/LayoutGuide.cpp
     GUI/LayoutItem.cpp

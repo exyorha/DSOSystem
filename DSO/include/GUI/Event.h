@@ -12,7 +12,11 @@ public:
         Resize,
         Show,
         Hide,
-        Paint
+        Paint,
+		KeyPressed,
+		KeyReleased,
+		FocusOut,
+		FocusIn
     };
 
     explicit Event(Type type);
@@ -23,8 +27,21 @@ public:
 
     inline Type type() const { return m_type; }
 
+	inline bool isAccepted() const {
+		return m_accepted;
+	}
+
+	inline void accept() {
+		m_accepted = true;
+	}
+
+	inline void ignore() {
+		m_accepted = false;
+	}
+
 private:
     Type m_type;
+	bool m_accepted;
 };
 
 #endif
