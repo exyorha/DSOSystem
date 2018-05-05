@@ -3,6 +3,7 @@
 
 #include <GUI/Application.h>
 #include <DSO/DSORootView.h>
+#include <Logging/LogManager.h>
 
 class DSOPlatform;
 class DSOAcquisition;

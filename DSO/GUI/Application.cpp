@@ -68,11 +68,12 @@ void Application::drawFrame(const sk_sp<SkSurface> &surface) {
 }
 
 void Application::keyPressed(uint32_t key) {
-    printf("key pressed: %u\n", key);
+	applicationLog.print(LogPriority::Debug, "key pressed: %u", key);
 }
 
 void Application::keyReleased(uint32_t key) {
-    printf("key released: %u\n", key);
+	applicationLog.print(LogPriority::Debug, "key released: %u", key);
 }
 
 thread_local Application *Application::m_instance;
+LogFacility applicationLog(LogSyslogFacility::User, "Application");

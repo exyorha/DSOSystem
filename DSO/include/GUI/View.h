@@ -3,6 +3,7 @@
 
 #include <GUI/LayoutItem.h>
 #include <GUI/LayoutConstraint.h>
+#include <Logging/LogFacility.h>
 
 #include <SkRefCnt.h>
 #include <SkPoint.h>
@@ -78,5 +79,7 @@ private:
     bool m_visibleOnScreen;
     bool m_layoutEnabled;
 };
+
+extern LogFacility viewLog;
 
 #endif

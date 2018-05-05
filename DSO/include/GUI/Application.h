@@ -3,6 +3,7 @@
 
 #include <GUI/Object.h>
 #include <GUI/ApplicationPlatformInterface.h>
+#include <Logging/LogFacility.h>
 
 #include <memory>
 
@@ -40,5 +41,7 @@ private:
     View *m_rootView;
     SkRegion m_dirtyRegion;
 };
+
+extern LogFacility applicationLog;
 
 #endif

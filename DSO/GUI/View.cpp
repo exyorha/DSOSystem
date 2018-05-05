@@ -261,7 +261,7 @@ SkISize View::solveLayout(LayoutSolveMode mode) {
 		views.emplace(view, static_cast<int>(views.size()));
 	});
 
-	printf("updating layout: %zu constraints, %zu views, width: %d, height: %d\n", constraints.size(), views.size(), width(), height());
+	viewLog.print(LogPriority::Debug, "updating layout: %zu constraints, %zu views, width: %d, height: %d", constraints.size(), views.size(), width(), height());
 
 	enum {
 		ModelColumnTop = 0,
@@ -491,3 +491,4 @@ SkISize View::maximumSizeHint() const {
 	}
 }
 
+LogFacility viewLog(LogSyslogFacility::User, "View");

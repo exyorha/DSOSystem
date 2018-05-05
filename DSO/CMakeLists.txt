@@ -45,6 +45,16 @@ set(gui_sources
     GUI/View.cpp
 )
 
+set(logging_sources
+	include/Logging/ILogSink.h
+	include/Logging/LogFacility.h
+	include/Logging/LogManager.h
+	include/Logging/LogSink.h
+	Logging/LogFacility.cpp
+	Logging/LogManager.cpp
+	Logging/LogSink.cpp
+)
+
 if(UNIX)
 	set(platform_sources
 	    include/LinuxPlatform/ILinuxDescriptorEventReceiver.h
@@ -73,12 +83,14 @@ if(WIN32)
 		include/Win32/WindowsDSOAccumulator.h
         include/Win32/WindowsDSOPlatform.h
         include/Win32/WindowsHostWindow.h
+		include/Win32/WindowsLogSink.h
         Win32/HandleWrappers.cpp
 		Win32/WindowsAcquisition.cpp
         Win32/WindowsApplicationPlatform.cpp
 		Win32/WindowsDSOAccumulator.cpp
         Win32/WindowsDSOPlatform.cpp
         Win32/WindowsHostWindow.cpp
+		Win32/WindowsLogSink.cpp
 		Resources/resources.rc
 	)
 endif()
@@ -86,6 +98,7 @@ endif()
 add_executable(DSO
     ${dso_sources}
     ${gui_sources}
+	${logging_sources}
 	${platform_sources}
 
     include/SkUserConfig.h
@@ -95,6 +108,7 @@ add_executable(DSO
 
 source_group(DSO FILES ${dso_sources})
 source_group(GUI FILES ${gui_sources})
+source_group(Logging FILES ${logging_sources})
 source_group(Platform FILES ${platform_sources})
 
 target_include_directories(DSO PRIVATE include)
