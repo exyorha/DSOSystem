@@ -18,6 +18,8 @@ public:
 
     virtual void keyPressed(uint32_t key) = 0;
     virtual void keyReleased(uint32_t key) = 0;
+
+	virtual void dispatchDeferred() = 0;
 };
 
 #endif

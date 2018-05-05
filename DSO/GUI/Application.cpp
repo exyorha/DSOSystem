@@ -108,5 +108,29 @@ void Application::setFocusView(View *view) {
 	}
 }
 
-thread_local Application *Application::m_instance;
+void Application::defer(std::function<void()> &&function) {
+	{
+		std::unique_lock<std::mutex> locker(m_deferQueueMutex);
+		m_deferQueue.emplace_back(std::move(function));
+	}
+	m_platform->postDefer();
+}
+
+void Application::dispatchDeferred() {
+	std::unique_lock<std::mutex> locker(m_deferQueueMutex);
+
+	while (!m_deferQueue.empty()) {
+		auto func = std::move(*m_deferQueue.begin());
+
+		m_deferQueue.pop_front();
+
+		locker.unlock();
+
+		func();
+
+		locker.lock();
+	}
+}
+
+Application *Application::m_instance;
 LogFacility applicationLog(LogSyslogFacility::User, "Application");

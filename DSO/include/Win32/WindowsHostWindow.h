@@ -17,6 +17,10 @@ class WindowsHostWindow final : public CWindowImpl<WindowsHostWindow> {
 public:
 	DECLARE_WND_CLASS_EX(nullptr, CS_HREDRAW | CS_VREDRAW, (HBRUSH)(COLOR_BACKGROUND + 1))
 
+	enum {
+		WM_DEFERRED = WM_USER
+	};
+
     WindowsHostWindow();
     virtual ~WindowsHostWindow();
 
@@ -27,6 +31,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, onLButtonUp)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, onMouseMove)
+		MESSAGE_HANDLER(WM_DEFERRED, onDeferred)
     END_MSG_MAP()
 
     inline ApplicationPlatformInterface *applicationPlatformInterface() const { return m_platformInterface; }
@@ -41,6 +46,7 @@ private:
 	LRESULT onLButtonUp(UINT message, WPARAM wParam, LPARAM lParam, BOOL &handled);
 	LRESULT onLButtonDown(UINT message, WPARAM wParam, LPARAM lParam, BOOL &handled);
 	LRESULT onMouseMove(UINT message, WPARAM wParam, LPARAM lParam, BOOL &handled);
+	LRESULT onDeferred(UINT message, WPARAM wParam, LPARAM lParam, BOOL &handled);
 
 	int getButtonIndex(int x, int y);
 	void setCurrentButton(int button);

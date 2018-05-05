@@ -2,6 +2,7 @@ set(dso_sources
     include/DSO/ApplicationInstance.h
 	include/DSO/DSOAccumulator.h
 	include/DSO/DSOAcquisition.h
+	include/DSO/DSOKeys.h
     include/DSO/DSOPlatform.h
     include/DSO/DSORootView.h
     include/DSO/DSOScreenView.h

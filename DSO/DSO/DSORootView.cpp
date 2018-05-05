@@ -1,6 +1,7 @@
 #include <DSO/DSORootView.h>
 #include <DSO/DSOScreenView.h>
 #include <DSO/DSOAcquisition.h>
+#include <DSO/DSOKeys.h>
 
 #include <GUI/TextView.h>
 #include <GUI/LayoutGuide.h>
@@ -77,6 +78,8 @@ void DSORootView::initializeAcquisition(DSOAcquisition &acquisition) {
 }
 
 void DSORootView::acquisitionStateChanged() {
+	dsoRootViewLog.print(LogPriority::Debug, "acquisition state changed, now %u", m_acquisition->state());
+
 	switch (m_acquisition->state()) {
 	case DSOAcquisition::State::Stopped:
 		m_runState->setText("Stopped");
@@ -103,6 +106,27 @@ void DSORootView::keyPressEvent(KeyEvent *event) {
 	event->accept();
 
 	dsoRootViewLog.print(LogPriority::Debug, "Key pressed: %u", event->keyCode());
+
+	switch (event->keyCode()) {
+	case KeyRunStop:
+		dsoRootViewLog.print(LogPriority::Debug, "Run/Stop in state %u\n", m_acquisition->state());
+
+		switch (m_acquisition->state()) {
+		case DSOAcquisition::State::Running:
+			m_acquisition->stop();
+
+			break;
+
+		case DSOAcquisition::State::Stopped:
+			m_acquisition->start();
+
+			break;
+
+		default:
+			break;
+		}
+		break;
+	}
 }
 
 void DSORootView::keyReleaseEvent(KeyEvent *event) {

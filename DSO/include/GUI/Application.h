@@ -6,6 +6,9 @@
 #include <Logging/LogFacility.h>
 
 #include <memory>
+#include <functional>
+#include <mutex>
+#include <list>
 
 #include <SkRegion.h>
 
@@ -37,18 +40,23 @@ public:
 
 	void setFocusView(View *view);
 
+	void defer(std::function<void()> &&function);
+
 private:
     virtual void drawFrame(const sk_sp<SkSurface> &surface) override;
     virtual void keyPressed(uint32_t key) override;
     virtual void keyReleased(uint32_t key) override;
+	virtual void dispatchDeferred() override;
 
 private:
 	void deliverKeyEvent(KeyEvent *event);
 
-    static thread_local Application *m_instance;
+    static Application *m_instance;
     std::unique_ptr<ApplicationPlatform> m_platform;
     View *m_rootView, *m_focusView;
     SkRegion m_dirtyRegion;
+	std::mutex m_deferQueueMutex;
+	std::list<std::function<void()>> m_deferQueue;
 };
 
 extern LogFacility applicationLog;

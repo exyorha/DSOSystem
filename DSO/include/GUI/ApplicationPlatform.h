@@ -4,6 +4,8 @@
 #include <GUI/DisplayInformation.h>
 #include <SkRefCnt.h>
 
+#include <functional>
+
 class SkSurface;
 
 class ApplicationPlatformInterface;
@@ -22,6 +24,8 @@ public:
     virtual void setApplicationPlatformInterface(ApplicationPlatformInterface *iface) = 0;
 
     virtual void exec() = 0;
+
+	virtual void postDefer() = 0;
 };
 
 #endif

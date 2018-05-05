@@ -167,3 +167,11 @@ void WindowsHostWindow::setCurrentButton(int button) {
 		m_currentButton = button;
 	}
 }
+
+LRESULT WindowsHostWindow::onDeferred(UINT message, WPARAM wParam, LPARAM lParam, BOOL &handled) {
+	if (m_platformInterface) {
+		m_platformInterface->dispatchDeferred();
+	}
+
+	return 0;
+}

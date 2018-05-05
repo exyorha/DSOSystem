@@ -1,4 +1,7 @@
 #include <DSO/DSOAcquisition.h>
+#include <DSO/IDSOAcquisitionEventReceiver.h>
+
+#include <GUI/Application.h>
 
 DSOAcquisition::DSOAcquisition() : m_state(State::Stopped), m_triggerMode(TriggerMode::Auto) {
 
@@ -46,6 +49,14 @@ void DSOAcquisition::stopped() {
 
 void DSOAcquisition::internalSetState(State state) {
 	m_state = state;
+
+	Application::instance()->defer(std::bind(&DSOAcquisition::deliverStateChange, this));
+}
+
+void DSOAcquisition::deliverStateChange() {
+	for (auto receiver : m_eventReceivers) {
+		receiver->acquisitionStateChanged();
+	}
 }
 
 auto DSOAcquisition::triggerMode() const -> TriggerMode {

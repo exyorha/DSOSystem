@@ -62,11 +62,13 @@ void WindowsAcquisition::engineThread() {
 void WindowsAcquisition::internalStart() {
 	std::unique_lock<std::mutex> locker(m_engineMutex);
 	m_runRequest = true;
+	m_engineCondvar.notify_one();
 }
 
 void WindowsAcquisition::internalStop() {
 	std::unique_lock<std::mutex> locker(m_engineMutex);
 	m_runRequest = false;
+	m_engineCondvar.notify_one();
 }
 
 void WindowsAcquisition::internalSetTriggerMode(TriggerMode mode) {

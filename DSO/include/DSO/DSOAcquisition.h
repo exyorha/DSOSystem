@@ -52,6 +52,7 @@ protected:
 
 private:
 	void internalSetState(State state);
+	void deliverStateChange();
 
 	mutable std::mutex m_acquisitionMutex;
 	State m_state;

@@ -17,6 +17,8 @@ public:
 
     virtual void exec() override;
 
+	virtual void postDefer() override;
+
 private:
     CAtlWinModule m_winModule;
     WindowsHostWindow m_hostWindow;

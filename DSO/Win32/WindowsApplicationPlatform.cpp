@@ -38,4 +38,6 @@ void WindowsApplicationPlatform::keepPreviousFrame() {
 
 }
 
-
+void WindowsApplicationPlatform::postDefer() {
+	m_hostWindow.PostMessage(WindowsHostWindow::WM_DEFERRED, 0, 0);
+}
