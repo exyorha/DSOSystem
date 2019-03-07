@@ -1,15 +1,16 @@
 #include <GUI/Application.h>
 #include <GUI/ApplicationPlatform.h>
-#include <GUI/View.h>
-#include <GUI/KeyEvent.h>
-#include <GUI/FocusEvent.h>
+#include <GUI/Window.h>
+#include <GUI/NuklearRenderer.h>
 
-#include <SkSurface.h>
-#include <SkCanvas.h>
-#include <SkRegion.h>
+#include <assert.h>
 
-Application::Application(std::unique_ptr<ApplicationPlatform> &&platform) : m_platform(std::move(platform)), m_rootView(nullptr),
-	m_focusView(nullptr) {
+#include <algorithm>
+
+#include <DSOResources.h>
+
+Application::Application(std::unique_ptr<ApplicationPlatform> &&platform) : m_platform(std::move(platform)), 
+	m_mainFont(helvR12, sizeof(helvR12)), m_nk(m_mainFont.font()) {
 
     m_platform->setApplicationPlatformInterface(this);
     m_instance = this;
@@ -19,28 +20,40 @@ Application::~Application() {
     m_instance = nullptr;
 }
 
-void Application::setRootView(View *view) {
-    m_rootView = view;
-
-    if (view != nullptr) {
-        auto info = m_platform->displayInformation();
-
-        view->setGeometry(SkIPoint::Make(0, 0), info.displaySize);
-        view->setVisibility(ViewVisibility::Visible);
-    }
-}
-
-void Application::update(SkRegion &&region) {
-    if (m_dirtyRegion.op(region, SkRegion::kUnion_Op)) {
-        m_platform->requestFrame();
-    }
+void Application::update() {
+    m_platform->requestFrame();
 }
 
 void Application::exec() {
     m_platform->exec();
 }
 
-void Application::drawFrame(const sk_sp<SkSurface> &surface) {
+DisplayInformation Application::displayInformation() const {
+	return m_platform->displayInformation();
+}
+
+void Application::drawFrame(pixman_image_t *display) {
+	for (auto it = m_windows.begin(); it != m_windows.end(); ) {
+		auto &win = **it;
+		auto hasBody = nk_begin_titled(
+			&m_nk, win.name(), win.title().c_str(), win.bounds(), win.flags()
+		);
+
+		if (hasBody) {
+			win.execute(&m_nk);
+		}
+
+		nk_end(&m_nk);
+
+		it++;
+	}
+
+	NuklearRenderer renderer(display);
+	renderer.renderContext(&m_nk);
+
+	nk_clear(&m_nk);
+
+#if 0
     if (m_dirtyRegion.isEmpty()) {
         m_platform->keepPreviousFrame();
 
@@ -69,18 +82,20 @@ void Application::drawFrame(const sk_sp<SkSurface> &surface) {
             m_dirtyRegion.setEmpty();
         }
     }
+#endif
 }
 
 void Application::keyPressed(uint32_t key) {
-	KeyEvent event(Event::Type::KeyPressed, key);
-	deliverKeyEvent(&event);
+/*	KeyEvent event(Event::Type::KeyPressed, key);
+	deliverKeyEvent(&event);*/
 }
 
 void Application::keyReleased(uint32_t key) {
-	KeyEvent event(Event::Type::KeyReleased, key);
-	deliverKeyEvent(&event);
+/*	KeyEvent event(Event::Type::KeyReleased, key);
+	deliverKeyEvent(&event);*/
 }
 
+#if 0
 void Application::deliverKeyEvent(KeyEvent *event) {
 	for (auto view = m_focusView; view; view = static_cast<View *>(view->parent())) {
 		sendEvent(view, event);
@@ -89,24 +104,7 @@ void Application::deliverKeyEvent(KeyEvent *event) {
 			break;
 	}
 }
-
-void Application::setFocusView(View *view) {
-	if (view != m_focusView) {
-		applicationLog.print(LogPriority::Debug, "changing focus view, new view is %p", view);
-
-		if (m_focusView) {
-			FocusEvent event(Event::Type::FocusOut);
-			sendEvent(m_focusView, &event);
-		}
-
-		m_focusView = view;
-
-		if (m_focusView) {
-			FocusEvent event(Event::Type::FocusIn);
-			sendEvent(m_focusView, &event);
-		}
-	}
-}
+#endif
 
 void Application::defer(std::function<void()> &&function) {
 	{
@@ -130,6 +128,25 @@ void Application::dispatchDeferred() {
 
 		locker.lock();
 	}
+}
+
+void Application::addWindow(std::unique_ptr<Window> &&window) {
+	m_windows.emplace_back(std::move(window));
+	update();
+}
+
+void Application::removeWindow(Window *window) {
+	m_windows.erase(std::remove_if(m_windows.begin(), m_windows.end(), [=](const std::unique_ptr<Window> &win) { return win.get() == window; }), m_windows.end());
+	update();
+}
+
+Application::NuklearContext::NuklearContext(const nk_user_font *defaultFont) {
+	bool result = nk_init_default(this, defaultFont);
+	assert(result);
+}
+
+Application::NuklearContext::~NuklearContext() {
+
 }
 
 Application *Application::m_instance;

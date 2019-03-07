@@ -2,7 +2,6 @@
 #define DSO__APPLICATION_INSTANCE__H
 
 #include <GUI/Application.h>
-#include <DSO/DSORootView.h>
 #include <Logging/LogManager.h>
 
 class DSOPlatform;
@@ -22,7 +21,6 @@ private:
     std::unique_ptr<DSOPlatform> m_platform;
     std::unique_ptr<DSOAcquisition> m_acquisition;
     Application m_app;
-    DSORootView m_rootView;
 };
 
 #endif

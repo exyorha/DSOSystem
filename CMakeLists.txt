@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(DSOSystem)
 
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL arm)
+	enable_language(ASM)
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(clp INTERFACE)
-add_library(skia INTERFACE)
+include(CMake/Resources.cmake)
 
 if (MSVC)
 	set(CMAKE_C_FLAGS_MINSIZEREL "/MT /GL /Ox /Os /DNDEBUG /MP")
@@ -29,43 +32,27 @@ if (MSVC)
 	set(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "/DEBUG:FASTLINK /LTCG:incremental /INCREMENTAL:NO /CGTHREADS:8" CACHE STRING "Flags used by the linker during Release with Debug Info builds." FORCE)
 endif()
 
-if(UNIX)
-	add_library(libdrm INTERFACE)
-	find_package(PkgConfig REQUIRED)
-	pkg_check_modules(CLP clp REQUIRED)
-	pkg_check_modules(LIBDRM libdrm REQUIRED)
-	pkg_check_modules(SKIA skia REQUIRED)
-	target_include_directories(clp INTERFACE ${CLP_INCLUDE_DIRS})
-	target_link_libraries(clp INTERFACE ${CLP_LIBRARIES})
-	target_include_directories(libdrm INTERFACE ${LIBDRM_INCLUDE_DIRS})
-	target_link_libraries(libdrm INTERFACE ${LIBDRM_LIBRARIES})
-	target_include_directories(skia INTERFACE ${SKIA_INCLUDE_DIRS}/core ${SKIA_INCLUDE_DIRS}/gpu)
-	target_link_libraries(skia INTERFACE ${SKIA_LDFLAGS} -lfreetype -Wl,-rpath-link,${SKIA_LIBRARY_DIRS})
-endif()
-
 if(WIN32)
-	target_include_directories(skia INTERFACE ${PROJECT_SOURCE_DIR}/../skia/include/core ${PROJECT_SOURCE_DIR}/../skia/include/gpu)
-	target_link_libraries(skia INTERFACE ${PROJECT_SOURCE_DIR}/../skia/out/Static/skia.lib)
-	target_include_directories(clp INTERFACE
-		${PROJECT_SOURCE_DIR}/../Clp-1.16.11/Clp/src
-		${PROJECT_SOURCE_DIR}/../Clp-1.16.11/CoinUtils/src
-	)
-	target_link_libraries(clp INTERFACE
-		${PROJECT_SOURCE_DIR}/../Clp-1.16.11/Clp/MSVisualStudio/v10/x64-v141-Release/libClp.lib
-		${PROJECT_SOURCE_DIR}/../Clp-1.16.11/Clp/MSVisualStudio/v10/x64-v141-Release/libCoinUtils.lib
-	)
-	
-    add_definitions(-D_UNICODE -DUNICODE)
+  add_definitions(-D_UNICODE -DUNICODE)
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set_directory_properties(PROPERTIES COMPILE_OPTIONS -Wno-psabi)
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL arm)
+  set_directory_properties(PROPERTIES COMPILE_OPTIONS -mthumb)
 endif()
 
 if(UNIX)
-	add_subdirectory(initramfs_init)
-	add_subdirectory(init)
 	add_subdirectory(system_support)
 endif()
+
+add_library(nuklear INTERFACE)
+target_include_directories(nuklear INTERFACE nuklear)
+
+if(CMAKE_CROSSCOMPILING)
+
+else()
+	add_subdirectory(HostTools)
+endif()
+
+add_subdirectory(pixman)
 
 add_subdirectory(DSO)

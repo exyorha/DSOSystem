@@ -1,15 +1,18 @@
 #include <DSO/DSORootView.h>
-#include <DSO/DSOScreenView.h>
+//#include <DSO/DSOScreenView.h>
 #include <DSO/DSOAcquisition.h>
 #include <DSO/DSOKeys.h>
 
+#include <GUI/Application.h>
+
+/*
 #include <GUI/TextView.h>
 #include <GUI/LayoutGuide.h>
 #include <GUI/LayoutConstraint.h>
-#include <GUI/KeyEvent.h>
+#include <GUI/KeyEvent.h>*/
 
-DSORootView::DSORootView() : m_acquisition(nullptr) {
-	auto topStatusBar = createChild<LayoutGuide>();
+DSORootView::DSORootView() : Window("DSORootView", getBounds(), NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BACKGROUND | NK_WINDOW_TITLE), m_acquisition(nullptr) {
+	/*auto topStatusBar = createChild<LayoutGuide>();
 	auto topStatusFiller = createChild<LayoutGuide>();
 
 	m_runState = createChild<TextView>();
@@ -55,7 +58,13 @@ DSORootView::DSORootView() : m_acquisition(nullptr) {
 
 	setLayoutEnabled(true);
 	setFocusPolicy(true);
-	setFocus();
+	setFocus();*/
+}
+
+struct nk_rect DSORootView::getBounds() {
+	auto display = Application::instance()->displayInformation();
+
+	return nk_rect(0.0f, 0.0f, static_cast<float>(display.displayWidth), static_cast<float>(display.displayHeight));
 }
 
 DSORootView::~DSORootView() {
@@ -72,14 +81,14 @@ void DSORootView::initializeAcquisition(DSOAcquisition &acquisition) {
 	m_acquisition = &acquisition;
 	m_acquisition->registerEventReceiver(this);
 
-	m_screenView->initializeAcquisition(acquisition);
+//	m_screenView->initializeAcquisition(acquisition);
 
 	acquisitionStateChanged();
 }
 
 void DSORootView::acquisitionStateChanged() {
 	dsoRootViewLog.print(LogPriority::Debug, "acquisition state changed, now %u", m_acquisition->state());
-
+	/*
 	switch (m_acquisition->state()) {
 	case DSOAcquisition::State::Stopped:
 		m_runState->setText("Stopped");
@@ -99,9 +108,9 @@ void DSORootView::acquisitionStateChanged() {
 	}
 
 	//m_runState->update();
-	updateLayout();
+	updateLayout();*/
 }
-
+/*
 void DSORootView::keyPressEvent(KeyEvent *event) {
 	event->accept();
 
@@ -131,6 +140,6 @@ void DSORootView::keyPressEvent(KeyEvent *event) {
 
 void DSORootView::keyReleaseEvent(KeyEvent *event) {
 	event->accept();
-}
+}*/
 
 LogFacility dsoRootViewLog(LogSyslogFacility::User, "DSORootView");

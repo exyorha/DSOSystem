@@ -2,9 +2,9 @@
 
 #include <Win32/WindowsHostWindow.h>
 
-#include <SkSurface.h>
-
 #include <memory>
+
+#include <assert.h>
 
 WindowsHostWindow::WindowsHostWindow() : m_platformInterface(nullptr), m_currentButton(-1) {
 	{
@@ -29,8 +29,8 @@ WindowsHostWindow::WindowsHostWindow() : m_platformInterface(nullptr), m_current
 
     BITMAPINFO bitmapInfo;
     bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
-    bitmapInfo.bmiHeader.biWidth = 800;
-    bitmapInfo.bmiHeader.biHeight = -480;
+    bitmapInfo.bmiHeader.biWidth = ScreenWidth;
+    bitmapInfo.bmiHeader.biHeight = -ScreenHeight;
     bitmapInfo.bmiHeader.biPlanes = 1;
     bitmapInfo.bmiHeader.biBitCount = 32;
     bitmapInfo.bmiHeader.biCompression = BI_RGB;
@@ -48,7 +48,9 @@ WindowsHostWindow::WindowsHostWindow() : m_platformInterface(nullptr), m_current
 
     SelectObject(m_screenDC.get(), m_screenBitmap.get());
 
-    m_screenSurface = SkSurface::MakeRasterDirect(SkImageInfo::MakeN32(800, 480, kOpaque_SkAlphaType), m_bitmapBits, 800 * sizeof(uint32_t));
+	auto image = pixman_image_create_bits(PIXMAN_a8b8g8r8, ScreenWidth, ScreenHeight, static_cast<uint32_t *>(m_bitmapBits), ScreenWidth * sizeof(uint32_t));
+	assert(image);
+	m_screenSurface.reset(image);
 }
 
 WindowsHostWindow::~WindowsHostWindow() {
@@ -99,13 +101,13 @@ LRESULT WindowsHostWindow::handleClose(UINT nMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT WindowsHostWindow::handlePaint(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled) {
     PAINTSTRUCT paint;
 
-    m_platformInterface->drawFrame(m_screenSurface);
+    m_platformInterface->drawFrame(m_screenSurface.get());
 
     auto dc = BeginPaint(&paint);
 
 	m_panelImage.Draw(dc, 0, 0);
 
-    if (!BitBlt(dc, 3, 60, 800, 480, m_screenDC.get(), 0, 0, SRCCOPY))
+    if (!BitBlt(dc, 3, 60, ScreenWidth, ScreenHeight, m_screenDC.get(), 0, 0, SRCCOPY))
         AtlThrow(HRESULT_FROM_WIN32(GetLastError()));
 
     EndPaint(&paint);

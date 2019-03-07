@@ -13,7 +13,8 @@ WindowsApplicationPlatform::~WindowsApplicationPlatform() {
 
 DisplayInformation WindowsApplicationPlatform::displayInformation() const {
     DisplayInformation disp;
-    disp.displaySize = SkISize::Make(800, 480);
+	disp.displayWidth = WindowsHostWindow::ScreenWidth;
+	disp.displayHeight = WindowsHostWindow::ScreenHeight;
 
     return disp;
 }

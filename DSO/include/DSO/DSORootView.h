@@ -1,7 +1,7 @@
 #ifndef DSO__DSO_ROOT_VIEW__H
 #define DSO__DSO_ROOT_VIEW__H
 
-#include <GUI/View.h>
+#include <GUI/Window.h>
 #include <DSO/IDSOAcquisitionEventReceiver.h>
 #include <Logging/LogFacility.h>
 
@@ -9,21 +9,19 @@ class TextView;
 class DSOScreenView;
 class DSOAcquisition;
 
-class DSORootView final : public View, private IDSOAcquisitionEventReceiver {
+class DSORootView final : public Window, private IDSOAcquisitionEventReceiver {
 public:
     DSORootView();
     virtual ~DSORootView();
 
     void initializeAcquisition(DSOAcquisition &acquisition);
-
-protected:
-	virtual void keyPressEvent(KeyEvent *event) override;
-	virtual void keyReleaseEvent(KeyEvent *event) override;
-
+	
 private:
     virtual void acquisitionStateChanged() override;
 
 private:
+	static struct nk_rect getBounds();
+
     TextView *m_runState;
     DSOScreenView *m_screenView;
     TextView *m_bottomStatusBar;

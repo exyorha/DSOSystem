@@ -6,10 +6,7 @@
 #include <atlimage.h>
 
 #include <Win32/HandleWrappers.h>
-
-#include <SkRefCnt.h>
-
-class SkSurface;
+#include <GUI/PixmanUtils.h>
 
 class ApplicationPlatformInterface;
 
@@ -19,6 +16,11 @@ public:
 
 	enum {
 		WM_DEFERRED = WM_USER
+	};
+
+	enum : unsigned int {
+		ScreenWidth = 800,
+		ScreenHeight = 480
 	};
 
     WindowsHostWindow();
@@ -54,7 +56,7 @@ private:
     DeviceContextHandle m_screenDC;
     BitmapHandle m_screenBitmap;
     void *m_bitmapBits;
-    sk_sp<SkSurface> m_screenSurface;
+    PixmanImage m_screenSurface;
     ApplicationPlatformInterface *m_platformInterface;
 	ATL::CImage m_panelImage;
 	ATL::CImage m_buttonMapImage;

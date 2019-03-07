@@ -1,0 +1,12 @@
+[submodule "nuklear"]
+	path = nuklear
+	url = https://github.com/vurtun/nuklear.git
+[submodule "pixman/pixman"]
+	path = pixman/pixman
+	url = https://gitlab.freedesktop.org/pixman/pixman.git
+[submodule "HostTools/xorgproto"]
+	path = HostTools/xorgproto
+	url = https://gitlab.freedesktop.org/xorg/proto/xorgproto.git
+[submodule "HostTools/bdftopcf"]
+	path = HostTools/bdftopcf
+	url = https://gitlab.freedesktop.org/xorg/util/bdftopcf.git

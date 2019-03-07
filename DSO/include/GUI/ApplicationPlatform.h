@@ -2,11 +2,8 @@
 #define GUI__APPLICATION_PLATFORM__H
 
 #include <GUI/DisplayInformation.h>
-#include <SkRefCnt.h>
 
 #include <functional>
-
-class SkSurface;
 
 class ApplicationPlatformInterface;
 
