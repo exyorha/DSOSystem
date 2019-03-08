@@ -48,7 +48,8 @@ add_library(nuklear INTERFACE)
 target_include_directories(nuklear INTERFACE nuklear)
 
 if(CMAKE_CROSSCOMPILING)
-
+	set(IMPORT_HOST_TOOLS "HOSTTOOLS-NOTFOUND" CACHE FILEPATH "Path to HostTools import file")
+	include(${IMPORT_HOST_TOOLS})
 else()
 	add_subdirectory(HostTools)
 endif()

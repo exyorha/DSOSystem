@@ -1,5 +1,5 @@
 function(begin_resource_library name)
-	add_library(${name} STATIC 
+	add_library(${name} STATIC
 		${CMAKE_CURRENT_BINARY_DIR}/ResourceLibrary${name}/${name}.cpp
 		${CMAKE_CURRENT_BINARY_DIR}/ResourceLibrary${name}/${name}.h
 	)
@@ -11,6 +11,7 @@ endfunction()
 function(add_font_resource name filename resourcename)
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/fonts/${resourcename}.pcf
+		COMMAND cmake -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/fonts
 		COMMAND bdftopcf -p4 -u4 -l -L -o ${CMAKE_CURRENT_BINARY_DIR}/fonts/${resourcename}.pcf ${filename}
 		MAIN_DEPENDENCY ${filename}
 		VERBATIM
@@ -37,7 +38,7 @@ function(finish_resource_library name)
 		OUTPUT
 			${CMAKE_CURRENT_BINARY_DIR}/ResourceLibrary${name}/${name}.cpp
 			${CMAKE_CURRENT_BINARY_DIR}/ResourceLibrary${name}/${name}.h
-
+		COMMAND cmake -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/ResourceLibrary${name}
 		COMMAND
 			GenerateResources
 				${CMAKE_CURRENT_BINARY_DIR}/ResourceLibrary${name}/${name}.cpp
@@ -48,4 +49,3 @@ function(finish_resource_library name)
 		VERBATIM
 	)
 endfunction()
-
