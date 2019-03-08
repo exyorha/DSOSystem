@@ -1,5 +1,5 @@
 begin_resource_library(DSOResources)
-add_font_resource(DSOResources ${CMAKE_CURRENT_SOURCE_DIR}/Resources/fonts/helvR12.bdf helvR12)
+add_font_resource(DSOResources ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Fonts/helvR12.bdf helvR12)
 finish_resource_library(DSOResources)
 
 set(dso_sources

@@ -60,8 +60,6 @@ float PCFFont::width(float height, const char *text, int len) const {
 
 	float pos = 0.0f;
 
-	float xpos = 0.0f;
-
 	while (cpos < len) {
 		clen = nk_utf_decode(text + cpos, &codepoint, len - cpos);
 
@@ -72,21 +70,20 @@ float PCFFont::width(float height, const char *text, int len) const {
 
 		PCFUncompressedMetrics metrics = retrieveMetrics(codepoint);
 
-		if (cpos == clen) {
-			xpos = metrics.leftBearing;
-		}
-
-		width = pos + metrics.width;
+		width = pos + metrics.rightBearing;
 		pos += metrics.width;
+
 	}
 
-	return xpos + width + 16.0;
+	return width;
 }
 
 void PCFFont::drawText(int x, int y, const char *string, int length, pixman_image_t *source, pixman_image_t *destination) const {
 	nk_rune codepoint;
 	int clen;
 	int cpos = 0;
+
+	int x0 = x;
 
 	while (cpos < length) {
 		clen = nk_utf_decode(string + cpos, &codepoint, length - cpos);
@@ -181,7 +178,9 @@ pixman_image_t *PCFFont::retrieveBitmapForCharacter(unsigned int codepoint, PCFU
 	return image;
 }
 
-PCFUncompressedMetrics PCFFont::retrieveMetrics(unsigned int index) const {
+PCFUncompressedMetrics PCFFont::retrieveMetrics(unsigned int codepoint) const {
+	auto index = lookupCharacter(codepoint);
+
 	if (m_compressedMetrics) {
 		PCFUncompressedMetrics metrics;
 
