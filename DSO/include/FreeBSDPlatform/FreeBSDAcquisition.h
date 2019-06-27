@@ -1,12 +1,12 @@
-#ifndef LINUX_PLATFORM__LINUX_ACQUISITION__H
-#define LINUX_PLATFORM__LINUX_ACQUISITION__H
+#ifndef FREEBSD_PLATFORM__FREEBSD_ACQUISITION__H
+#define FREEBSD_PLATFORM__FREEBSD_ACQUISITION__H
 
 #include <DSO/DSOAcquisition.h>
 
-class LinuxAcquisition final : public DSOAcquisition {
+class FreeBSDAcquisition final : public DSOAcquisition {
 public:
-    LinuxAcquisition();
-    ~LinuxAcquisition();
+    FreeBSDAcquisition();
+    ~FreeBSDAcquisition();
 
   	virtual size_t channelCount() const override;
 	virtual std::unique_ptr<DSOAccumulator> allocateChannelAccumulator(size_t channel, size_t width, size_t height) override;
@@ -14,7 +14,7 @@ public:
 protected:
 	virtual void internalStart() override;
 	virtual void internalStop() override;
-	virtual void internalSetTriggerMode(TriggerMode mode) override;  
+	virtual void internalSetTriggerMode(TriggerMode mode) override;
 };
 
 #endif

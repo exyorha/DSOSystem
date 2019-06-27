@@ -9,11 +9,13 @@
 
 #include <DSOResources.h>
 
-Application::Application(std::unique_ptr<ApplicationPlatform> &&platform) : m_platform(std::move(platform)), 
+Application::Application(std::unique_ptr<ApplicationPlatform> &&platform) : m_platform(std::move(platform)),
 	m_mainFont(helvR12, sizeof(helvR12)), m_nk(m_mainFont.font()) {
 
     m_platform->setApplicationPlatformInterface(this);
     m_instance = this;
+    
+    update();
 }
 
 Application::~Application() {

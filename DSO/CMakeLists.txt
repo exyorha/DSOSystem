@@ -53,21 +53,23 @@ set(logging_sources
 
 if(UNIX)
 	set(platform_sources
-	    include/LinuxPlatform/ILinuxDescriptorEventReceiver.h
-		include/LinuxPlatform/LinuxAcquisition.h
-		include/LinuxPlatform/LinuxApplicationPlatform.h
-		include/LinuxPlatform/LinuxDRMRenderer.h
-		include/LinuxPlatform/LinuxDSOPlatform.h
-		include/LinuxPlatform/LinuxError.h
-		include/LinuxPlatform/LinuxEventLoop.h
-		include/LinuxPlatform/LinuxManagedDescriptor.h
-		LinuxPlatform/LinuxAcquisition.cpp
-		LinuxPlatform/LinuxApplicationPlatform.cpp
-		LinuxPlatform/LinuxDRMRenderer.cpp
-		LinuxPlatform/LinuxDSOPlatform.cpp
-		LinuxPlatform/LinuxError.cpp
-		LinuxPlatform/LinuxEventLoop.cpp
-		LinuxPlatform/LinuxManagedDescriptor.cpp
+	    include/FreeBSDPlatform/IFreeBSDEventReceiver.h
+		include/FreeBSDPlatform/FreeBSDAcquisition.h
+		include/FreeBSDPlatform/FreeBSDApplicationPlatform.h
+        include/FreeBSDPlatform/FreeBSDConsoleLogSink.h
+		include/FreeBSDPlatform/FreeBSDVTRenderer.h
+		include/FreeBSDPlatform/FreeBSDDSOPlatform.h
+		include/FreeBSDPlatform/FreeBSDError.h
+		include/FreeBSDPlatform/FreeBSDEventLoop.h
+		include/FreeBSDPlatform/FreeBSDManagedDescriptor.h
+		FreeBSDPlatform/FreeBSDAcquisition.cpp
+		FreeBSDPlatform/FreeBSDApplicationPlatform.cpp
+        FreeBSDPlatform/FreeBSDConsoleLogSink.cpp
+		FreeBSDPlatform/FreeBSDVTRenderer.cpp
+		FreeBSDPlatform/FreeBSDDSOPlatform.cpp
+		FreeBSDPlatform/FreeBSDError.cpp
+		FreeBSDPlatform/FreeBSDEventLoop.cpp
+		FreeBSDPlatform/FreeBSDManagedDescriptor.cpp
 	)
 endif()
 
@@ -111,4 +113,10 @@ target_link_libraries(DSO PRIVATE nuklear pixman DSOResources)
 
 if(UNIX)
     set_target_properties(DSO PROPERTIES LINK_FLAGS "-static")
+
+    add_custom_command(TARGET DSO POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} $<TARGET_FILE:DSO> --only-keep-debug ${CMAKE_CURRENT_BINARY_DIR}/DSO.dbg
+        COMMAND ${CMAKE_OBJCOPY} --add-gnu-debuglink=DSO.dbg --strip-debug $<TARGET_FILE:DSO>
+        VERBATIM
+    )
 endif()
