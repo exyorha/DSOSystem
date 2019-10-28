@@ -40,7 +40,6 @@ endif()
 
 if(UNIX)
     add_compile_options(-pthread)
-	add_subdirectory(system_support)
 endif()
 
 add_library(nuklear INTERFACE)

@@ -1,1 +1,0 @@
-install(FILES 800x600-as-800x480-emulation.bin DESTINATION lib/firmware/edid)
