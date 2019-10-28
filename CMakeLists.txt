@@ -7,6 +7,8 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(Threads REQUIRED)
+
 include(CMake/Resources.cmake)
 
 if (MSVC)
@@ -36,11 +38,8 @@ if(WIN32)
   add_definitions(-D_UNICODE -DUNICODE)
 endif()
 
-if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL arm)
-  set_directory_properties(PROPERTIES COMPILE_OPTIONS -mthumb)
-endif()
-
 if(UNIX)
+    add_compile_options(-pthread)
 	add_subdirectory(system_support)
 endif()
 

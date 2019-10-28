@@ -109,7 +109,7 @@ source_group(Platform FILES ${platform_sources})
 
 target_include_directories(DSO PRIVATE include)
 
-target_link_libraries(DSO PRIVATE nuklear pixman DSOResources)
+target_link_libraries(DSO PRIVATE nuklear pixman DSOResources Threads::Threads)
 
 if(UNIX)
     set_target_properties(DSO PROPERTIES LINK_FLAGS "-static")
