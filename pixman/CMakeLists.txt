@@ -79,13 +79,19 @@ set(USE_ARM_IWMMXT FALSE)
 
 message("Compiling pixman for ${CMAKE_SYSTEM_PROCESSOR}")
 
-if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL i386 OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL AMD64 OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL x86_64)
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL i386)
 	set(USE_X86_MMX TRUE)
+
+	target_sources(pixman PRIVATE 
+		pixman/pixman/pixman-mmx.c
+	)
+endif()
+
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL i386 OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL AMD64 OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL x86_64)
 	set(USE_SSE2 TRUE)
 	set(USE_SSSE3 TRUE)
 
 	target_sources(pixman PRIVATE 
-		pixman/pixman/pixman-mmx.c
 		pixman/pixman/pixman-sse2.c
 		pixman/pixman/pixman-ssse3.c
 	)
